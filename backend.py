@@ -23,7 +23,16 @@ def get_db():
 # 数据库初始化函数
 def init_db():
     conn = get_db()
-    conn.execute()
+    conn.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            category TEXT NOT NULL,
+            amount REAL NOT NULL
+        )
+        '''
+    )
     conn.commit()
     conn.close()
 
