@@ -1,4 +1,4 @@
+# Web 框架
 flask>=2.0.0
+# 统计与分组聚合
 pandas>=1.3.0
-openpyxl>=3.0.0
-gunicorn>=20.0.0

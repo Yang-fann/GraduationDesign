@@ -1,6 +1,7 @@
-/* 入口文件：组合 PC 与 Mphone 页面样式 */
+/* frontend.PC-Mphone.css — 样式唯一入口：按顺序串联各分表，与 frontend.html 中的 <link> 对应。 */
 @import url("/static/css/frontend.PC.tokens.css");
 @import url("/static/css/frontend.PC.layout.css");
+@import url("/static/css/frontend.PC.theme.css");
 @import url("/static/css/frontend.PC.components.css");
 @import url("/static/css/frontend.PC.dashboard.css");
 @import url("/static/css/frontend.PC.modal.css");

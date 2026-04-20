@@ -1,6 +1,8 @@
+/* frontend.PC.dashboard.css — 数据概览/统计页：指标卡网格、双列图表区、卡片头/体、明细表与粘性表头。 */
 /* =========================
    统计卡片与图表
 ========================= */
+/* 四宫格（或自动换行）：每项 minmax 保证窄屏仍能并排若干张 */
 .fd-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -8,26 +10,63 @@
     margin-bottom: 24px;
 }
 
+/* 单张指标卡：白字 + 纯色底区分语义（蓝/绿/青/紫由修饰类决定） */
 .fd-stats__card {
+    position: relative;
     padding: 16px;
     color: #fff;
     border-radius: var(--radius-lg);
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+    box-shadow:
+        0 10px 40px rgba(var(--shadow-ink), 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    transition:
+        transform var(--duration-normal) var(--ease-spring),
+        box-shadow var(--duration-normal) var(--ease-smooth);
+}
+
+.fd-stats__card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow:
+        0 20px 50px rgba(var(--shadow-ink), 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.fd-stats__card:active {
+    transform: translateY(-2px) scale(0.98);
+    transition-duration: var(--duration-fast);
+}
+
+.fd-stats__card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+    transition: opacity var(--duration-normal) var(--ease-smooth);
+    pointer-events: none;
+}
+
+.fd-stats__card:hover::after {
+    opacity: 1;
 }
 
 .fd-stats__card.fd-stats__card--blue {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: #5f66c4;
 }
 
 .fd-stats__card.fd-stats__card--green {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: #14b8a6;
 }
 
 .fd-stats__card.fd-stats__card--teal {
-    background: linear-gradient(135deg, #0d9488, #0f766e);
+    background: #0f766e;
 }
 
 .fd-stats__card.fd-stats__card--purple {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    background: #6f76d8;
 }
 
 .fd-stats__label {
@@ -39,12 +78,19 @@
 .fd-stats__value {
     font-size: 20px;
     font-weight: 700;
+    transition: transform var(--duration-normal) var(--ease-spring);
 }
 
+.fd-stats__card:hover .fd-stats__value {
+    transform: scale(1.05);
+}
+
+/* 数据周期一行略小字号，容纳长日期区间 */
 .fd-stats__date-range {
     font-size: 16px;
 }
 
+/* 桌面：饼图 + 折线图两列；窄屏在 Mphone.responsive 里改为单列 */
 .fd-charts {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -58,7 +104,7 @@
 }
 
 .fd-card__header h3 {
-    color: #374151;
+    color: var(--color-text-primary);
     font-size: 16px;
     font-weight: 600;
 }
@@ -67,6 +113,7 @@
     padding: 16px;
 }
 
+/* ECharts 初始化目标节点：固定高度，宽度 100% 随卡片伸缩 */
 .fd-charts__container {
     width: 100%;
     height: 350px;
@@ -75,8 +122,23 @@
 /* =========================
    表格
 ========================= */
+/* 表过宽时横向滚动，避免撑破主区 */
 .fd-table {
     overflow-x: auto;
+}
+
+/* 带纵向上限的明细表：约 10 行 + 表头；表头 sticky 固定 */
+.fd-table.fd-table--body-cap {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(49px + 10 * 49px);
+}
+
+.fd-table.fd-table--body-cap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 1px 0 var(--color-border);
 }
 
 table {
@@ -87,22 +149,45 @@ table {
 th {
     padding: 12px 16px;
     text-align: left;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: var(--color-text-secondary);
-    background: #f9fafb;
+    color: var(--color-text-primary);
+    background: var(--glass-table-header);
+    -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.85);
+    backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.85);
     border-bottom: 1px solid var(--color-border);
 }
 
 td {
     padding: 12px 16px;
-    color: #374151;
+    color: var(--color-text-primary);
     font-size: 14px;
     border-bottom: 1px solid var(--color-border-light);
+    transition: background var(--duration-fast) var(--ease-smooth);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr {
+    transition: transform var(--duration-fast) var(--ease-smooth);
 }
 
 tr:hover td {
-    background: #f9fafb;
+    background: var(--glass-table-row-hover);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    th {
+        background: var(--color-border-light);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    tr:hover td {
+        background: var(--color-border-light);
+    }
 }
